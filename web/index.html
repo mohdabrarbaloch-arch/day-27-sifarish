@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sifarish — a recommender that shows its work</title>
+<meta name="description" content="A hybrid recommendation engine — item-item collaborative filtering, user-user collaborative filtering and TF-IDF content — with a blend that adapts to how much it knows about you." />
+<link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark">س</span>
+      <span class="brand-text">
+        <strong>Sifarish</strong>
+        <small>سفارش · recommendation engine</small>
+      </span>
+    </a>
+    <nav class="topnav" id="topnav">
+      <button class="navlink" data-view="feed">Your feed</button>
+      <button class="navlink" data-view="catalogue">Catalogue</button>
+      <button class="navlink" data-view="admin" id="nav-admin" hidden>Admin</button>
+      <button class="navlink" data-view="about">How it works</button>
+      <button class="btn btn-ghost" id="auth-btn">Sign in</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+
+  <!-- ============ FEED ============ -->
+  <section class="view" id="view-feed">
+    <div class="hero">
+      <p class="eyebrow">Hybrid recommender</p>
+      <h1>Recommendations that show you <em>why</em>.</h1>
+      <p class="lede">
+        Every item below comes with the signal that produced it and a sentence built
+        from the actual numbers. Rate a few things and watch the blend shift from
+        content to collaborative filtering.
+      </p>
+    </div>
+
+    <div class="blend-panel" id="blend-panel">
+      <div class="blend-head">
+        <h2>How much it knows about you</h2>
+        <span class="blend-history" id="blend-history">no ratings yet</span>
+      </div>
+      <div class="blend-bars" id="blend-bars"></div>
+      <p class="blend-note" id="blend-note">
+        Signed out, so this is pure content + popularity. Sign in to personalise it.
+      </p>
+    </div>
+
+    <div class="section-head">
+      <h2 id="feed-title">Your recommendations</h2>
+      <div class="seg" id="feed-mode">
+        <button class="seg-btn active" data-mode="personal">Personalised</button>
+        <button class="seg-btn" data-mode="cold">Cold start</button>
+      </div>
+    </div>
+
+    <div class="grid" id="feed-grid"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+    <p class="empty" id="feed-empty" hidden></p>
+  </section>
+
+  <!-- ============ CATALOGUE ============ -->
+  <section class="view" id="view-catalogue" hidden>
+    <div class="hero compact">
+      <p class="eyebrow">Catalogue</p>
+      <h1>215 titles, six genres.</h1>
+      <p class="lede">Rate anything from 1 to 5. Your ratings feed straight back into the model.</p>
+    </div>
+    <div class="filters">
+      <input type="search" id="search" placeholder="Search titles, tags, descriptions…" />
+      <select id="category-filter"><option value="">All genres</option></select>
+    </div>
+    <div class="grid" id="catalogue-grid"></div>
+    <p class="empty" id="catalogue-empty" hidden>Nothing matches that search.</p>
+  </section>
+
+  <!-- ============ ADMIN ============ -->
+  <section class="view" id="view-admin" hidden>
+    <div class="hero compact">
+      <p class="eyebrow">Admin</p>
+      <h1>Offline evaluation.</h1>
+      <p class="lede">
+        The model against a temporal holdout, next to the popularity baseline it has to beat.
+        Metrics without a baseline are decoration.
+      </p>
+    </div>
+    <div class="kpis" id="admin-kpis"></div>
+    <div class="panel">
+      <h2>Model vs popularity baseline</h2>
+      <div class="table-scroll">
+        <table class="eval-table" id="eval-table">
+          <thead><tr><th>Metric</th><th>Model</th><th>Baseline</th><th>Lift</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="muted" id="eval-meta"></p>
+    </div>
+    <div class="two-col">
+      <div class="panel"><h2>Top genres</h2><ul class="bar-list" id="admin-cats"></ul></div>
+      <div class="panel"><h2>Most rated</h2><ol class="rank-list" id="admin-items"></ol></div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section class="view" id="view-about" hidden>
+    <div class="hero compact">
+      <p class="eyebrow">How it works</p>
+      <h1>Three signals, one honest blend.</h1>
+    </div>
+    <div class="prose">
+      <div class="panel">
+        <h2>Item-item collaborative filtering</h2>
+        <p><em>People who liked what you liked also liked this.</em> Adjusted cosine similarity with shrinkage, so a pair of items that share one co-rater is not treated as evidence.</p>
+      </div>
+      <div class="panel">
+        <h2>User-user collaborative filtering</h2>
+        <p><em>People like you liked this.</em> Adds diversity that item-item misses. Noisier on small data, which is why it never carries the most weight.</p>
+      </div>
+      <div class="panel">
+        <h2>Content-based (TF-IDF)</h2>
+        <p><em>This is about what you like.</em> The only signal that works for a brand-new user, and the only one that can explain itself in words.</p>
+      </div>
+      <div class="panel accent">
+        <h2>The blend adapts</h2>
+        <p>Weights depend on two things: how many ratings you have, and how much your ratings <em>vary</em>. Collaborative filtering works on deviations from your own mean — so if you rate everything 5.0, your deviation is zero and the collaborative signal carries no information. The blend detects that and hands the weight to content instead of pretending otherwise.</p>
+      </div>
+      <div class="panel accent">
+        <h2>What this is not</h2>
+        <p>The catalogue and the rating history are generated. The engine is not: it is the same code that would run on real data, evaluated honestly against a baseline. The evaluation had a genuine bug when it was first written — see the README.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <span>Sifarish · MIT licensed · built with FastAPI and NumPy</span>
+    <a href="/docs" id="docs-link">API reference</a>
+  </div>
+</footer>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-backdrop" id="modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
